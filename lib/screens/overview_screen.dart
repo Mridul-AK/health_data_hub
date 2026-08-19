@@ -1,0 +1,267 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../models/health_data.dart';
+import '../state/app_state.dart';
+import '../theme/app_theme.dart';
+import '../widgets/callout_bubble.dart';
+import '../widgets/cards.dart';
+import '../widgets/common.dart';
+import '../widgets/health_line_chart.dart';
+import '../widgets/organ_metrics_panel.dart';
+import '../widgets/radial_gauge.dart';
+import 'organ_detail_screen.dart';
+
+/// Genotype / Phenotype "Health Conditions Overview" screen.
+class OverviewScreen extends StatelessWidget {
+  const OverviewScreen({super.key});
+
+  void _openPanel(BuildContext context) {
+    showOrganMetrics(
+      context,
+      selectedId: 'heart',
+      onSelect: (o) => Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => OrganDetailScreen(organ: o)),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    return Scaffold(
+      body: GlowBackground(
+        glow: AppColors.green.withValues(alpha: 0.10),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const StatusBar(),
+            AppHeader(
+                title: 'Phenotype',
+                showBack: false,
+                onRobotTap: () => _openPanel(context)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: SegmentedToggle(
+                options: const ['Genotype', 'Phenotype'],
+                selected: state.tab == OverviewTab.genotype ? 0 : 1,
+                onChanged: (i) {
+                  context.read<AppState>().tab =
+                      i == 0 ? OverviewTab.genotype : OverviewTab.phenotype;
+                  if (i == 0) _openPanel(context);
+                },
+              ),
+            ),
+            const SizedBox(height: 26),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: NeonTitle('Health Conditions Overview'),
+            ),
+            const SizedBox(height: 8),
+            _BodyHero(onDetails: () => _openPanel(context)),
+            const SizedBox(height: 18),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: SegmentedToggle(
+                options: const ['Dopamine', 'Serotonin'],
+                selected: state.neuro == NeuroToggle.dopamine ? 0 : 1,
+                solidSelected: true,
+                onChanged: (i) => context.read<AppState>().neuro =
+                    i == 0 ? NeuroToggle.dopamine : NeuroToggle.serotonin,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: _DopamineChartCard(),
+            ),
+            const SizedBox(height: 18),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: _AboutDnaRow(),
+            ),
+            const SizedBox(height: 26),
+            const NeonTitle('Immune system strength'),
+            const SizedBox(height: 18),
+            const Center(
+                child: RadialGauge(value: 30, accent: AppColors.red, size: 230)),
+            const SizedBox(height: 26),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: RecommendationCard(
+                accent: AccentTheme.cyan,
+                title: 'Immune System Recommendation:',
+                body:
+                    'Maintaining a strong immune system is essential for overall health and protection against illness. We recommend:',
+                bullets: [
+                  'Eating a balanced diet rich in fruits, vegetables, and proteins.',
+                  'Staying hydrated and getting enough sleep (7–8 hours).',
+                  'Regular exercise to boost immunity and reduce stress.',
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  MiniHeading('Strengths :'),
+                  ValueChipGrid(values: HealthData.strengths, positive: true),
+                  MiniHeading('Weakness :'),
+                  ValueChipGrid(values: HealthData.strengths, positive: false),
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BodyHero extends StatelessWidget {
+  final VoidCallback onDetails;
+  const _BodyHero({required this.onDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 460,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Platform disc behind feet.
+          Positioned(
+            bottom: 20,
+            child: Image.asset('assets/images/platform.png',
+                width: 300, fit: BoxFit.contain),
+          ),
+          // Body figure (edges faded so the cropped background blends in).
+          const Align(
+            alignment: Alignment(0, -0.35),
+            child: VignetteImage(asset: 'assets/images/body.png', height: 400),
+          ),
+          // Callouts.
+          Positioned(
+            top: 20,
+            right: 14,
+            child: GestureDetector(
+              onTap: onDetails,
+              child: CalloutBubble(HealthData.bodyCallouts[0], maxWidth: 170),
+            ),
+          ),
+          Positioned(
+            top: 96,
+            left: 10,
+            child: CalloutBubble(HealthData.bodyCallouts[1], maxWidth: 130),
+          ),
+          Positioned(
+            bottom: 150,
+            left: 10,
+            child: CalloutBubble(HealthData.bodyCallouts[2], maxWidth: 130),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DopamineChartCard extends StatelessWidget {
+  const _DopamineChartCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 16, 16, 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF080C0A),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.line),
+      ),
+      child: Column(
+        children: [
+          const Text('Dopamine Levels During Physical Activity',
+              style: TextStyle(
+                  fontFamily: AppText.display,
+                  fontSize: 13,
+                  color: AppColors.textPrimary)),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              const RotatedBox(
+                quarterTurns: 3,
+                child: Text('Meditation Stats',
+                    style: TextStyle(
+                        fontFamily: AppText.display,
+                        fontSize: 11,
+                        color: AppColors.textSecondary)),
+              ),
+              const Expanded(
+                  child: HealthLineChart(points: HealthData.dopamine)),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Wrap(
+            spacing: 14,
+            runSpacing: 4,
+            alignment: WrapAlignment.center,
+            children: const [
+              _LegendDot(AppColors.green, 'Warm Up Phase'),
+              _LegendDot(AppColors.gold, 'Peak Activity'),
+              _LegendDot(AppColors.red, 'Recovery Phase'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+  const _LegendDot(this.color, this.label);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 5),
+        Text(label, style: AppText.mono10),
+      ],
+    );
+  }
+}
+
+class _AboutDnaRow extends StatelessWidget {
+  const _AboutDnaRow();
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const DnaScoreCard(),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('ABOUT Hyperprolactinemia',
+                  style: AppText.sectionTitle.copyWith(fontSize: 16)),
+              const SizedBox(height: 10),
+              Text(
+                'This condition is characterized by abnormally high levels of prolactin in the blood, which can result from various factors, including dopamine dysfunction, certain medications, or tumors of the pituitary gland (prolactinomas).',
+                style: AppText.body,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
