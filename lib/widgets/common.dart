@@ -252,7 +252,7 @@ class SegmentedToggle extends StatelessWidget {
         children: List.generate(options.length, (i) {
           final bool on = i == selected;
           final Color pill = solidSelected
-              ? accent
+              ? (on ? accent : Colors.transparent)
               : (on ? const Color(0xFF2B322E) : Colors.transparent);
           return Expanded(
             child: GestureDetector(

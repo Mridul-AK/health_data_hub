@@ -212,7 +212,7 @@ class DnaScoreCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.line),
         image: const DecorationImage(
-          image: AssetImage('assets/images/dna.png'),
+          image: AssetImage('assets/images/hyperplolactinemia.png'),
           fit: BoxFit.cover,
         ),
       ),

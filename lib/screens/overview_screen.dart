@@ -125,39 +125,90 @@ class _BodyHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 460,
+      height: 500,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Platform disc behind feet.
+          // 3D Stand Platform Disc - positioned cleanly at bottom so it is 100% fully visible
           Positioned(
-            bottom: 20,
-            child: Image.asset('assets/images/platform.png',
-                width: 300, fit: BoxFit.contain),
+            top: 300,
+            child: Image.asset(
+              'assets/images/stand.png',
+              width: 400,
+              height: 250,
+              fit: BoxFit.contain,
+            ),
           ),
-          // Body figure (edges faded so the cropped background blends in).
-          const Align(
-            alignment: Alignment(0, -0.35),
-            child: VignetteImage(asset: 'assets/images/body.png', height: 400),
-          ),
-          // Callouts.
+          // 3D Body Figure - positioned above the platform disc
           Positioned(
-            top: 20,
-            right: 14,
+            top: 0,
+            bottom: 60,
+            child: Image.asset(
+              'assets/images/body.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+          // Target Dot 1: Neck/Shoulder (Green)
+          Positioned(
+            top: 85,
+            right: 178,
+            child: _targetDot(AppColors.green),
+          ),
+          // Target Dot 2: Lungs/Chest (Red)
+          Positioned(
+            top: 135,
+            left: 172,
+            child: _targetDot(AppColors.red),
+          ),
+          // Target Dot 3: Knee (Red)
+          Positioned(
+            top: 310,
+            left: 174,
+            child: _targetDot(AppColors.red),
+          ),
+          // Callout 1: Top Right (Neck / Shoulder pain)
+          Positioned(
+            top: 30,
+            right: 12,
             child: GestureDetector(
               onTap: onDetails,
               child: CalloutBubble(HealthData.bodyCallouts[0], maxWidth: 170),
             ),
           ),
+          // Callout 2: Middle Left (Chronics Lungs Problem)
           Positioned(
-            top: 96,
-            left: 10,
-            child: CalloutBubble(HealthData.bodyCallouts[1], maxWidth: 130),
+            top: 125,
+            left: 12,
+            child: CalloutBubble(HealthData.bodyCallouts[1], maxWidth: 145),
           ),
+          // Callout 3: Lower Left (Knee Problem)
           Positioned(
-            bottom: 150,
-            left: 10,
-            child: CalloutBubble(HealthData.bodyCallouts[2], maxWidth: 130),
+            top: 295,
+            left: 20,
+            child: CalloutBubble(HealthData.bodyCallouts[2], maxWidth: 140),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _targetDot(Color color) {
+    return Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.8),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: color.withValues(alpha: 0.4),
+            blurRadius: 16,
+            spreadRadius: 5,
           ),
         ],
       ),

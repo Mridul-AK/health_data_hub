@@ -138,7 +138,7 @@ class HealthData {
         Callout('Recovery phase with mild discomfort noted',
             positive: true, link: true, align: Alignment.topRight),
         Callout('Better Cardiac Condition than Past.',
-            positive: true, align: Alignment.centerLeft),
+            positive: true, align: Alignment.topLeft),
         Callout('Notice a minor blockage in the lower 4 th chamber.',
             positive: false, align: Alignment.bottomLeft),
       ],
@@ -153,7 +153,7 @@ class HealthData {
       id: 'lungs',
       name: 'Lungs',
       asset: 'assets/organs/lungs.png',
-      heroAsset: 'assets/images/lungs_hero.png',
+      heroAsset: 'assets/organs/lungs.png',
       accent: AccentTheme.gold,
       conditionTitle: 'Lungs Conditions Overview',
       gaugeLabel: 'Lungs Condition',
@@ -181,8 +181,8 @@ class HealthData {
     Organ(
       id: 'kidneys',
       name: 'kidneys',
-      asset: 'assets/organs/kidneys.png',
-      heroAsset: 'assets/organs/kidneys.png',
+      asset: 'assets/organs/kidney.png',
+      heroAsset: 'assets/organs/kidney.png',
       accent: AccentTheme.cyan,
       conditionTitle: 'Kidney Conditions Overview',
       gaugeLabel: 'Kidney Condition',
@@ -233,8 +233,8 @@ class HealthData {
     Organ(
       id: 'bones',
       name: 'Bones',
-      asset: 'assets/organs/bones.png',
-      heroAsset: 'assets/organs/bones.png',
+      asset: 'assets/organs/spine.png',
+      heroAsset: 'assets/organs/spine.png',
       accent: AccentTheme.gold,
       conditionTitle: 'Bone Conditions Overview',
       gaugeLabel: 'Bone Density',
@@ -374,7 +374,7 @@ class HealthData {
     Callout('Recovery slight pain in the left side neck.',
         positive: true, link: true, align: Alignment.topRight),
     Callout('Chronics Lungs Problem', positive: false, align: Alignment.centerLeft),
-    Callout('Knee Problems', positive: false, align: Alignment.bottomLeft),
+    Callout('Knee Problem', positive: false, align: Alignment.bottomLeft),
   ];
 
   /// Dopamine line-chart sample points (0..120 x, 50..100 y).

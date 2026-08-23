@@ -136,32 +136,43 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
     final selected = o.id == widget.selectedId;
     return GestureDetector(
       onTap: () => widget.onSelect(o),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 3),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: selected
-              ? LinearGradient(colors: [
-                  AppColors.green.withValues(alpha: 0.16),
-                  Colors.transparent,
-                ])
+          color: selected ? const Color(0xFF1E2421) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: selected
+              ? Border.all(color: AppColors.green.withValues(alpha: 0.5), width: 1.2)
+              : null,
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: AppColors.green.withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    spreadRadius: -3,
+                  ),
+                ]
               : null,
         ),
         child: Row(
           children: [
             SizedBox(
-                width: 44,
-                height: 44,
-                child: Image.asset(o.asset, fit: BoxFit.contain)),
+              width: 36,
+              height: 36,
+              child: Image.asset(o.asset, fit: BoxFit.contain),
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 o.name,
                 style: TextStyle(
-                    fontFamily: AppText.display,
-                    fontSize: selected ? 17 : 14,
-                    color: AppColors.textPrimary),
+                  fontFamily: AppText.display,
+                  fontSize: selected ? 16 : 14,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

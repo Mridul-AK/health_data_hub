@@ -120,27 +120,29 @@ class _OrganHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lungs = organ.id == 'lungs';
     return SizedBox(
       height: 430,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          if (!lungs)
-            Positioned(
-              bottom: 20,
-              child: Image.asset('assets/images/platform_heart.png',
-                  width: 320, fit: BoxFit.contain),
-            ),
+          Positioned(
+            bottom: 6,
+            child:
+            // SizedBox(
+            //   width: 340,
+            //   height: 140,
+            //   child: Stack(
+            //     alignment: Alignment.center,
+            //     children: [
+            //       Image.asset('assets/images/layer.png', width: 320, fit: BoxFit.contain),
+                  Image.asset('assets/images/stand.png', width: 340, fit: BoxFit.contain),
+            //     ],
+            //   ),
+            // ),
+          ),
           Align(
-            alignment: lungs ? Alignment.center : const Alignment(0, -0.42),
-            child: lungs
-                ? const VignetteImage(
-                    asset: 'assets/images/lungs_hero.png',
-                    height: 380,
-                    widthFactor: 0.60,
-                  )
-                : Image.asset(organ.heroAsset, height: 230, fit: BoxFit.contain),
+            alignment: const Alignment(0, -0.42),
+            child: Image.asset(organ.heroAsset, height: 230, fit: BoxFit.contain),
           ),
           // Callouts
           for (final c in organ.callouts) _positioned(c),
