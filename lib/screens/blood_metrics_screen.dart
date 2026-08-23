@@ -142,26 +142,37 @@ class _BloodMetricsScreenState extends State<BloodMetricsScreen> {
                 const Center(
                   child: _OverallBloodQualityGauge(value: 73),
                 ),
-                const SizedBox(height: 32),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18),
-                  child: Text(
-                    'RANGES',
-                    style: TextStyle(
-                      fontFamily: AppText.display,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.2,
-                    ),
+                Transform.translate(
+                  offset: const Offset(0, -35),
+                  child: const _BottomGreenHorizonArc(),
+                ),
+                Transform.translate(
+                  offset: const Offset(0, -20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 18),
+                        child: Text(
+                          'RANGES',
+                          style: TextStyle(
+                            fontFamily: AppText.display,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 18),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 18),
+                        child: _BloodRangesGrid(),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 18),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18),
-                  child: _BloodRangesGrid(),
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 12),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 18),
                   child: _BloodHealthOverviewTable(),
@@ -475,6 +486,54 @@ class _HorizonArcPainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0
         ..color = const Color(0xFFFBD009),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class _BottomGreenHorizonArc extends StatelessWidget {
+  const _BottomGreenHorizonArc();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 35,
+      width: double.infinity,
+      child: CustomPaint(
+        painter: _GreenHorizonArcPainter(),
+      ),
+    );
+  }
+}
+
+class _GreenHorizonArcPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final path = Path();
+
+    path.moveTo(w * 0.1, h);
+    path.quadraticBezierTo(w * 0.5, -h * 0.4, w * 0.9, h);
+
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6.0
+        ..color = const Color(0xFF22C55E).withValues(alpha: 0.6)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+    );
+
+    // Sharp green horizon line
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0
+        ..color = const Color(0xFF22C55E),
     );
   }
 

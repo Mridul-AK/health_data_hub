@@ -58,7 +58,7 @@ class OrganDetailScreen extends StatelessWidget {
               child: NeonTitle(organ.gaugeLabel),
             ),
             Transform.translate(
-              offset: const Offset(0, -50),
+              offset: Offset(0, organ.score == 76 ? -50 : -10),
               child: Center(
                 child: organ.score == 76
                     ? Image.asset(
@@ -75,11 +75,11 @@ class OrganDetailScreen extends StatelessWidget {
               ),
             ),
             Transform.translate(
-              offset: const Offset(0, -95),
-              child: const _BottomGreenHorizonArc(),
+              offset: Offset(0, organ.score == 76 ? -75 : -35),
+              child: _BottomColoredHorizonArc(color: accent.color),
             ),
             Transform.translate(
-              offset: const Offset(0, -75),
+              offset: Offset(0, organ.score == 76 ? -65 : -25),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: RecommendationCard(
@@ -209,8 +209,9 @@ class _OrganHero extends StatelessWidget {
   }
 }
 
-class _BottomGreenHorizonArc extends StatelessWidget {
-  const _BottomGreenHorizonArc();
+class _BottomColoredHorizonArc extends StatelessWidget {
+  final Color color;
+  const _BottomColoredHorizonArc({required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -218,13 +219,16 @@ class _BottomGreenHorizonArc extends StatelessWidget {
       height: 35,
       width: double.infinity,
       child: CustomPaint(
-        painter: _GreenHorizonArcPainter(),
+        painter: _ColoredHorizonArcPainter(color: color),
       ),
     );
   }
 }
 
-class _GreenHorizonArcPainter extends CustomPainter {
+class _ColoredHorizonArcPainter extends CustomPainter {
+  final Color color;
+  _ColoredHorizonArcPainter({required this.color});
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
@@ -240,20 +244,21 @@ class _GreenHorizonArcPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 6.0
-        ..color = const Color(0xFF22C55E).withValues(alpha: 0.65)
+        ..color = color.withValues(alpha: 0.65)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
 
-    // Sharp green horizon line
+    // Sharp colored horizon line
     canvas.drawPath(
       path,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.2
-        ..color = const Color(0xFF22C55E),
+        ..color = color,
     );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _ColoredHorizonArcPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
