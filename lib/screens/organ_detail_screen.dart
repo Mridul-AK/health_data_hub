@@ -40,10 +40,10 @@ class OrganDetailScreen extends StatelessWidget {
     return Scaffold(
       body: GlowBackground(
         glow: accent.glow,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const StatusBar(),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
             AppHeader(onRobotTap: () => _openPanel(context)),
             const SizedBox(height: 4),
             Padding(
@@ -68,22 +68,19 @@ class OrganDetailScreen extends StatelessWidget {
                 body: organ.recommendationBody,
                 bullets: organ.recommendationBullets,
                 numbered: _isAttack,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (!_isAttack) ...[
-                    const MiniHeading('Strengths :'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (!_isAttack) ...[
+                      const MiniHeading('Strengths :'),
+                      ValueChipGrid(
+                          values: HealthData.strengths, positive: true),
+                    ],
+                    const MiniHeading('Weakness :'),
                     ValueChipGrid(
-                        values: HealthData.strengths, positive: true),
+                        values: HealthData.strengths, positive: false),
                   ],
-                  const MiniHeading('Weakness :'),
-                  ValueChipGrid(
-                      values: HealthData.strengths, positive: false),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 22),
@@ -111,6 +108,7 @@ class OrganDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -130,16 +128,19 @@ class _OrganHero extends StatelessWidget {
         children: [
           if (!lungs)
             Positioned(
-              bottom: 60,
+              bottom: 20,
               child: Image.asset('assets/images/platform_heart.png',
-                  width: 300, fit: BoxFit.contain),
+                  width: 320, fit: BoxFit.contain),
             ),
           Align(
-            alignment: lungs ? Alignment.center : const Alignment(0, -0.25),
+            alignment: lungs ? Alignment.center : const Alignment(0, -0.42),
             child: lungs
                 ? const VignetteImage(
-                    asset: 'assets/images/lungs_hero.png', height: 380)
-                : Image.asset(organ.heroAsset, height: 250, fit: BoxFit.contain),
+                    asset: 'assets/images/lungs_hero.png',
+                    height: 380,
+                    widthFactor: 0.60,
+                  )
+                : Image.asset(organ.heroAsset, height: 230, fit: BoxFit.contain),
           ),
           // Callouts
           for (final c in organ.callouts) _positioned(c),
@@ -153,13 +154,13 @@ class _OrganHero extends StatelessWidget {
         ? GestureDetector(onTap: onCalloutTap, child: CalloutBubble(c, maxWidth: 170))
         : CalloutBubble(c, maxWidth: 150);
     if (c.align == Alignment.topRight) {
-      return Positioned(top: 30, right: 12, child: bubble);
+      return Positioned(top: 40, right: 12, child: bubble);
     } else if (c.align == Alignment.topLeft) {
       return Positioned(top: 34, left: 10, child: bubble);
     } else if (c.align == Alignment.bottomLeft) {
-      return Positioned(bottom: 150, left: 8, child: bubble);
+      return Positioned(bottom: 140, left: 8, child: bubble);
     } else {
-      return Positioned(top: 120, left: 8, child: bubble);
+      return Positioned(top: 130, left: 8, child: bubble);
     }
   }
 }

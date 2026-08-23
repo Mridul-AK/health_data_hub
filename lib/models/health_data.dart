@@ -384,6 +384,13 @@ class HealthData {
     Offset(80, 58), Offset(96, 88), Offset(104, 51), Offset(120, 65),
   ];
 
+  /// Serotonin line-chart sample points (0..120 x, 50..100 y).
+  static const List<Offset> serotonin = [
+    Offset(0, 62), Offset(12, 70), Offset(24, 88), Offset(36, 92),
+    Offset(52, 60), Offset(60, 78), Offset(68, 65), Offset(74, 83),
+    Offset(80, 52), Offset(96, 75), Offset(104, 91), Offset(120, 80),
+  ];
+
   static const List<String> strengths = [
     '0.05', '0.05', '0.05', '0.05', '0.05', '0.05',
   ];

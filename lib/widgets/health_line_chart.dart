@@ -24,6 +24,15 @@ class _HealthLineChartState extends State<HealthLineChart>
   }
 
   @override
+  void didUpdateWidget(covariant HealthLineChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.points != widget.points) {
+      _c.reset();
+      _c.forward();
+    }
+  }
+
+  @override
   void dispose() {
     _c.dispose();
     super.dispose();
@@ -35,7 +44,7 @@ class _HealthLineChartState extends State<HealthLineChart>
       aspectRatio: 1.55,
       child: AnimatedBuilder(
         animation: _c,
-        builder: (_, __) => CustomPaint(
+        builder: (context, _) => CustomPaint(
           painter: _ChartPainter(widget.points, _c.value),
         ),
       ),

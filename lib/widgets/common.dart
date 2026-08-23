@@ -101,8 +101,8 @@ class AppHeader extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10),
               child: IconButton(
                 onPressed: onRobotTap,
-                icon: const Icon(Icons.precision_manufacturing_outlined,
-                    size: 26, color: AppColors.textSecondary),
+                icon: const ScannerIcon(
+                    size: 24, color: AppColors.textSecondary),
               ),
             ),
           ),
@@ -110,6 +110,94 @@ class AppHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+class ScannerIcon extends StatelessWidget {
+  final Color color;
+  final double size;
+  const ScannerIcon({super.key, this.color = AppColors.textSecondary, this.size = 24});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      size: Size(size, size),
+      painter: _ScannerIconPainter(color),
+    );
+  }
+}
+
+class _ScannerIconPainter extends CustomPainter {
+  final Color color;
+  _ScannerIconPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final w = size.width;
+    final h = size.height;
+
+    // 1. Draw brackets (scanning frame)
+    final bracketLen = h * 0.25;
+    // Left bracket
+    canvas.drawPath(
+      Path()
+        ..moveTo(bracketLen, 0)
+        ..lineTo(0, 0)
+        ..lineTo(0, h)
+        ..lineTo(bracketLen, h),
+      paint,
+    );
+    // Right bracket
+    canvas.drawPath(
+      Path()
+        ..moveTo(w - bracketLen, 0)
+        ..lineTo(w, 0)
+        ..lineTo(w, h)
+        ..lineTo(w - bracketLen, h),
+      paint,
+    );
+
+    // 2. Draw anatomy wireframe (inside the brackets)
+    final cx = w / 2;
+    // Head (circle)
+    final headRadius = h * 0.12;
+    final headY = h * 0.20;
+    canvas.drawCircle(Offset(cx, headY), headRadius, paint);
+
+    // Spine
+    final spineTop = headY + headRadius;
+    final spineBottom = h * 0.70;
+    canvas.drawLine(Offset(cx, spineTop), Offset(cx, spineBottom), paint);
+
+    // Shoulders
+    final shoulderY = headY + headRadius + 3;
+    final shoulderWidth = w * 0.22;
+    canvas.drawLine(Offset(cx - shoulderWidth, shoulderY),
+        Offset(cx + shoulderWidth, shoulderY), paint);
+
+    // Ribs (horizontal lines across spine)
+    canvas.drawLine(Offset(cx - shoulderWidth * 0.8, shoulderY + 4),
+        Offset(cx + shoulderWidth * 0.8, shoulderY + 4), paint);
+    canvas.drawLine(Offset(cx - shoulderWidth * 0.6, shoulderY + 8),
+        Offset(cx + shoulderWidth * 0.6, shoulderY + 8), paint);
+
+    // Hips
+    final hipWidth = w * 0.18;
+    canvas.drawLine(Offset(cx - hipWidth, spineBottom),
+        Offset(cx + hipWidth, spineBottom), paint);
+
+    // Legs
+    canvas.drawLine(Offset(cx - hipWidth, spineBottom), Offset(cx - hipWidth, h * 0.90), paint);
+    canvas.drawLine(Offset(cx + hipWidth, spineBottom), Offset(cx + hipWidth, h * 0.90), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 /// Radial glow behind the hero art, tinted by the active accent.
@@ -212,29 +300,38 @@ class VignetteImage extends StatelessWidget {
   final double? width;
   final double? height;
   final Alignment radiusCenter;
+  final double widthFactor;
+
   const VignetteImage({
     super.key,
     required this.asset,
     this.width,
     this.height,
     this.radiusCenter = Alignment.center,
+    this.widthFactor = 0.58,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ShaderMask(
-      blendMode: BlendMode.dstIn,
-      shaderCallback: (rect) => RadialGradient(
-        center: radiusCenter,
-        radius: 0.72,
-        colors: const [
-          Colors.white,
-          Colors.white,
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.62, 1.0],
-      ).createShader(rect),
-      child: Image.asset(asset, width: width, height: height, fit: BoxFit.contain),
+    return ClipRect(
+      child: Align(
+        alignment: Alignment.center,
+        widthFactor: widthFactor,
+        child: ShaderMask(
+          blendMode: BlendMode.dstIn,
+          shaderCallback: (rect) => RadialGradient(
+            center: radiusCenter,
+            radius: 0.72,
+            colors: const [
+              Colors.white,
+              Colors.white,
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.62, 1.0],
+          ).createShader(rect),
+          child: Image.asset(asset, width: width, height: height, fit: BoxFit.contain),
+        ),
+      ),
     );
   }
 }

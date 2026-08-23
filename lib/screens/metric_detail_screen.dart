@@ -15,10 +15,10 @@ class MetricDetailScreen extends StatelessWidget {
     return Scaffold(
       body: GlowBackground(
         glow: m.accent.glow,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const StatusBar(),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
             AppHeader(title: m.name),
             const SizedBox(height: 6),
             Padding(
@@ -103,6 +103,7 @@ class MetricDetailScreen extends StatelessWidget {
             const SizedBox(height: 40),
           ],
         ),
+      ),
       ),
     );
   }

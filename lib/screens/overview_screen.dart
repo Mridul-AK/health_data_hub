@@ -32,10 +32,10 @@ class OverviewScreen extends StatelessWidget {
     return Scaffold(
       body: GlowBackground(
         glow: AppColors.green.withValues(alpha: 0.10),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const StatusBar(),
+        child: SafeArea(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
             AppHeader(
                 title: 'Phenotype',
                 showBack: false,
@@ -98,23 +98,21 @@ class OverviewScreen extends StatelessWidget {
                   'Staying hydrated and getting enough sleep (7–8 hours).',
                   'Regular exercise to boost immunity and reduce stress.',
                 ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MiniHeading('Strengths :'),
-                  ValueChipGrid(values: HealthData.strengths, positive: true),
-                  MiniHeading('Weakness :'),
-                  ValueChipGrid(values: HealthData.strengths, positive: false),
-                ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    MiniHeading('Strengths :'),
+                    ValueChipGrid(values: HealthData.strengths, positive: true),
+                    MiniHeading('Weakness :'),
+                    ValueChipGrid(values: HealthData.strengths, positive: false),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 40),
           ],
         ),
+      ),
       ),
     );
   }
@@ -172,6 +170,13 @@ class _DopamineChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<AppState>();
+    final isDopamine = state.neuro == NeuroToggle.dopamine;
+    final title = isDopamine
+        ? 'Dopamine Levels During Physical Activity'
+        : 'Serotonin Levels During Physical Activity';
+    final points = isDopamine ? HealthData.dopamine : HealthData.serotonin;
+
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 16, 16, 12),
       decoration: BoxDecoration(
@@ -181,8 +186,8 @@ class _DopamineChartCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text('Dopamine Levels During Physical Activity',
-              style: TextStyle(
+          Text(title,
+              style: const TextStyle(
                   fontFamily: AppText.display,
                   fontSize: 13,
                   color: AppColors.textPrimary)),
@@ -197,8 +202,8 @@ class _DopamineChartCard extends StatelessWidget {
                         fontSize: 11,
                         color: AppColors.textSecondary)),
               ),
-              const Expanded(
-                  child: HealthLineChart(points: HealthData.dopamine)),
+              Expanded(
+                  child: HealthLineChart(points: points)),
             ],
           ),
           const SizedBox(height: 6),

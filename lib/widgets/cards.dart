@@ -26,12 +26,12 @@ class ValueChipGrid extends StatelessWidget {
       crossAxisCount: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.3,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      childAspectRatio: 1.95,
       children: values
           .map((v) => Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: c.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(8),
@@ -44,10 +44,11 @@ class ValueChipGrid extends StatelessWidget {
                     Text(v,
                         style: TextStyle(
                             fontFamily: AppText.display,
-                            fontSize: 12,
+                            fontSize: 11,
                             color: c)),
-                    const SizedBox(height: 2),
-                    const Text('HCV Antibody', style: AppText.chipLabel),
+                    const SizedBox(height: 1),
+                    Text('HCV Antibody', 
+                        style: AppText.chipLabel.copyWith(fontSize: 8.5)),
                   ],
                 ),
               ))
@@ -63,6 +64,8 @@ class RecommendationCard extends StatelessWidget {
   final List<String> bullets;
   final AccentTheme accent;
   final bool numbered;
+  final Widget? child;
+
   const RecommendationCard({
     super.key,
     required this.title,
@@ -70,6 +73,7 @@ class RecommendationCard extends StatelessWidget {
     required this.bullets,
     required this.accent,
     this.numbered = false,
+    this.child,
   });
 
   @override
@@ -123,6 +127,10 @@ class RecommendationCard extends StatelessWidget {
               ),
             );
           }),
+          if (child != null) ...[
+            const SizedBox(height: 10),
+            child!,
+          ],
         ],
       ),
     );
@@ -198,7 +206,8 @@ class DnaScoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 190,
+      width: 175,
+      height: 175,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.line),
@@ -207,7 +216,91 @@ class DnaScoreCard extends StatelessWidget {
           fit: BoxFit.cover,
         ),
       ),
-      child: const AspectRatio(aspectRatio: 1.0, child: SizedBox()),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: const LinearGradient(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+            colors: [
+              Color(0xCC000000),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Hyperprolactinemia Score',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                SizedBox(height: 2),
+                Text(
+                  'From all projects',
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const Text(
+                  '0%',
+                  style: TextStyle(fontSize: 8, color: AppColors.textFaint),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '95',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.0,
+                        shadows: [
+                          Shadow(color: AppColors.cyan, blurRadius: 10),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 1),
+                    Transform.translate(
+                      offset: const Offset(0, -4),
+                      child: const Text(
+                        '%',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Text(
+                  '100%',
+                  style: TextStyle(fontSize: 8, color: AppColors.textFaint),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

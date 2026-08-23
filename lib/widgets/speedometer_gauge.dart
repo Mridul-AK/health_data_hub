@@ -40,7 +40,7 @@ class _SpeedometerGaugeState extends State<SpeedometerGauge>
       height: widget.width * 0.62,
       child: AnimatedBuilder(
         animation: _a,
-        builder: (_, __) => CustomPaint(
+        builder: (context, _) => CustomPaint(
           painter: _SpeedoPainter(
               (widget.fraction * _a.value.clamp(0.0, 1.0))),
         ),

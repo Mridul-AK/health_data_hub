@@ -14,8 +14,8 @@ Future<void> showOrganMetrics(
     barrierLabel: 'Organ Metrics',
     barrierColor: Colors.black54,
     transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (_, __, ___) => const SizedBox.shrink(),
-    transitionBuilder: (ctx, anim, __, ___) {
+    pageBuilder: (context, animation, secondaryAnimation) => const SizedBox.shrink(),
+    transitionBuilder: (ctx, anim, secondaryAnim, _) {
       final curved =
           CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
       return Align(
@@ -55,7 +55,7 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
     return Material(
       color: Colors.transparent,
       child: Container(
-        width: size.width * 0.62,
+        width: size.width * 0.66,
         height: double.infinity,
         margin: const EdgeInsets.symmetric(vertical: 60),
         padding: const EdgeInsets.fromLTRB(18, 22, 14, 22),
@@ -105,8 +105,16 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: AppText.sectionTitle.copyWith(fontSize: 17)),
-            if (chevron)
+            Expanded(
+              child: Text(
+                title,
+                style: AppText.sectionTitle.copyWith(fontSize: 16),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (chevron) ...[
+              const SizedBox(width: 8),
               Container(
                 width: 26,
                 height: 26,
@@ -117,6 +125,7 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
                 child: Icon(open ? Icons.expand_less : Icons.expand_more,
                     size: 18, color: AppColors.green),
               ),
+            ],
           ],
         ),
       ),
@@ -146,11 +155,17 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
                 height: 44,
                 child: Image.asset(o.asset, fit: BoxFit.contain)),
             const SizedBox(width: 14),
-            Text(o.name,
+            Expanded(
+              child: Text(
+                o.name,
                 style: TextStyle(
                     fontFamily: AppText.display,
-                    fontSize: selected ? 18 : 14,
-                    color: AppColors.textPrimary)),
+                    fontSize: selected ? 17 : 14,
+                    color: AppColors.textPrimary),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),

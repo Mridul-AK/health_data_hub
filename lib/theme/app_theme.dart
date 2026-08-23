@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color bg = Color(0xFF050706);
-  static const Color bgElevated = Color(0xFF0C0F0E);
-  static const Color card = Color(0xFF0E1412);
+  static const Color bg = Color(0xFF000000);
+  static const Color bgElevated = Color(0xFF080B09);
+  static const Color card = Color(0xFF080B09);
 
   static const Color textPrimary = Color(0xFFF3F6F4);
   static const Color textSecondary = Color(0xFF9BA6A1);

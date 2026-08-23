@@ -58,32 +58,36 @@ class _RadialGaugeState extends State<RadialGauge>
           return CustomPaint(
             painter: _RadialGaugePainter(value: v, accent: widget.accent),
             child: Center(
-              child: Column(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text.rich(
-                    TextSpan(children: [
-                      TextSpan(
-                          text: v.round().toString(),
-                          style: TextStyle(
-                            fontFamily: AppText.display,
-                            fontSize: widget.size * 0.19,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                  color: widget.accent.withValues(alpha: 0.8),
-                                  blurRadius: 18),
-                            ],
-                          )),
-                      TextSpan(
-                          text: '%',
-                          style: TextStyle(
-                            fontFamily: AppText.display,
-                            fontSize: widget.size * 0.11,
-                            color: Colors.white,
-                          )),
-                    ]),
+                  Text(
+                    v.round().toString(),
+                    style: TextStyle(
+                      fontSize: widget.size * 0.23,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      height: 1.0,
+                      shadows: [
+                        Shadow(
+                          color: widget.accent.withValues(alpha: 0.8),
+                          blurRadius: 18,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Transform.translate(
+                    offset: Offset(0, -widget.size * 0.04),
+                    child: Text(
+                      '%',
+                      style: TextStyle(
+                        fontSize: widget.size * 0.10,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -145,15 +149,17 @@ class _RadialGaugePainter extends CustomPainter {
     // --- Scale labels 0..80.
     const labels = ['0', '20', '40', '60', '80'];
     for (int i = 0; i < labels.length; i++) {
-      final t = i / 5.0; // 0,0.2,..0.8
+      final t = i / (labels.length - 1); // 0, 0.25, 0.5, 0.75, 1.0
       final a = _start + _sweep * t;
       final pos = center + Offset(math.cos(a), math.sin(a)) * (r * 0.72);
+      final bool isMid = i == labels.length ~/ 2;
       final tp = TextPainter(
         text: TextSpan(
             text: labels[i],
-            style: const TextStyle(
-                color: AppColors.textSecondary,
+            style: TextStyle(
+                color: isMid ? accent : AppColors.textSecondary,
                 fontSize: 11,
+                fontWeight: isMid ? FontWeight.bold : FontWeight.normal,
                 fontFamily: AppText.mono)),
         textDirection: TextDirection.ltr,
       )..layout();
