@@ -58,10 +58,19 @@ class OrganDetailScreen extends StatelessWidget {
                 child: NeonTitle(organ.gaugeLabel)),
             const SizedBox(height: 8),
             Center(
-                child: RadialGauge(
-                    value: organ.score.toDouble(),
-                    accent: accent.color,
-                    size: 250)),
+              child: organ.score == 76
+                  ? Image.asset(
+                      'assets/images/gauge_76.png',
+                      width: 270,
+                      height: 270,
+                      fit: BoxFit.contain,
+                    )
+                  : RadialGauge(
+                      value: organ.score.toDouble(),
+                      accent: accent.color,
+                      size: 250,
+                    ),
+            ),
             const SizedBox(height: 28),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
