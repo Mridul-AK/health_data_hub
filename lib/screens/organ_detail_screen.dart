@@ -54,44 +54,49 @@ class OrganDetailScreen extends StatelessWidget {
             _OrganHero(organ: organ, onCalloutTap: () => _onCalloutTap(context)),
             const SizedBox(height: 8),
             Transform.translate(
-                offset: const Offset(0, -30),
-                child: NeonTitle(organ.gaugeLabel)),
-            const SizedBox(height: 8),
-            Center(
-              child: organ.score == 76
-                  ? Image.asset(
-                      'assets/images/gauge_76.png',
-                      width: 270,
-                      height: 270,
-                      fit: BoxFit.contain,
-                    )
-                  : RadialGauge(
-                      value: organ.score.toDouble(),
-                      accent: accent.color,
-                      size: 250,
-                    ),
+              offset: const Offset(0, -30),
+              child: NeonTitle(organ.gaugeLabel),
             ),
-            const SizedBox(height: 28),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: RecommendationCard(
-                accent: accent,
-                title: organ.recommendationTitle,
-                body: organ.recommendationBody,
-                bullets: organ.recommendationBullets,
-                numbered: _isAttack,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (!_isAttack) ...[
-                      const MiniHeading('Strengths :'),
+            Transform.translate(
+              offset: const Offset(0, -50),
+              child: Center(
+                child: organ.score == 76
+                    ? Image.asset(
+                        'assets/images/gauge_76.png',
+                        width: 270,
+                        height: 270,
+                        fit: BoxFit.contain,
+                      )
+                    : RadialGauge(
+                        value: organ.score.toDouble(),
+                        accent: accent.color,
+                        size: 250,
+                      ),
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0, -30),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: RecommendationCard(
+                  accent: accent,
+                  title: organ.recommendationTitle,
+                  body: organ.recommendationBody,
+                  bullets: organ.recommendationBullets,
+                  numbered: _isAttack,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (!_isAttack) ...[
+                        const MiniHeading('Strengths :'),
+                        ValueChipGrid(
+                            values: HealthData.strengths, positive: true),
+                      ],
+                      const MiniHeading('Weakness :'),
                       ValueChipGrid(
-                          values: HealthData.strengths, positive: true),
+                          values: HealthData.strengths, positive: false),
                     ],
-                    const MiniHeading('Weakness :'),
-                    ValueChipGrid(
-                        values: HealthData.strengths, positive: false),
-                  ],
+                  ),
                 ),
               ),
             ),
