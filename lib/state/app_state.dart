@@ -1,8 +1,5 @@
 import 'package:flutter/foundation.dart';
 
-/// Lightweight app-wide state. Provider is used only where a piece of UI state
-/// is shared across widgets (the overview tabs and the neuro-toggle); pure
-/// navigation state is left to the Navigator.
 class AppState extends ChangeNotifier {
   OverviewTab _tab = OverviewTab.phenotype;
   OverviewTab get tab => _tab;

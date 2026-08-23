@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/health_data.dart';
 import '../theme/app_theme.dart';
 
-/// Section heading like "Strengths :" / "Weakness :".
 class MiniHeading extends StatelessWidget {
   final String text;
   const MiniHeading(this.text, {super.key});
@@ -13,7 +12,6 @@ class MiniHeading extends StatelessWidget {
       );
 }
 
-/// 3x2 grid of small value chips (green for strengths, red for weakness).
 class ValueChipGrid extends StatelessWidget {
   final List<String> values;
   final bool positive;
@@ -57,7 +55,6 @@ class ValueChipGrid extends StatelessWidget {
   }
 }
 
-/// The glowing recommendation card.
 class RecommendationCard extends StatelessWidget {
   final String title;
   final String body;
@@ -137,7 +134,6 @@ class RecommendationCard extends StatelessWidget {
   }
 }
 
-/// A single "Chronic ... Risk Assessment" row.
 class RiskRow extends StatelessWidget {
   final RiskMetric metric;
   final VoidCallback onTap;
@@ -200,7 +196,6 @@ class RiskRow extends StatelessWidget {
   }
 }
 
-/// The DNA "score" card on the overview screen.
 class DnaScoreCard extends StatelessWidget {
   const DnaScoreCard({super.key});
   @override

@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// A single organ shown in the "Organ Metrics" panel and used to build its
-/// detail screen. All dummy / local data — no backend.
 class Organ {
   final String id;
   final String name;
-  final String asset; // organ png (assets/organs/*.png)
+  final String asset;
   final AccentTheme accent;
-  final String conditionTitle; // e.g. "Heart Conditions Overview"
-  final String gaugeLabel; // e.g. "Heart Condition"
-  final int score; // 0..100
-  final String heroAsset; // large hero image
+  final String conditionTitle;
+  final String gaugeLabel;
+  final int score;
+  final String heroAsset;
   final List<Callout> callouts;
   final String recommendationTitle;
   final String recommendationBody;
   final List<String> recommendationBullets;
-  final String riskTitle; // e.g. "Chronic Heart Disease Risk Assessment"
+  final String riskTitle;
   final List<RiskMetric> risks;
 
   const Organ({
@@ -39,8 +37,8 @@ class Organ {
 
 class Callout {
   final String text;
-  final bool positive; // green vs red border
-  final bool link; // shows "View in Details ->"
+  final bool positive;
+  final bool link;
   final Alignment align;
 
   const Callout(
@@ -60,7 +58,6 @@ class RiskMetric {
   const RiskMetric(this.name, this.subtitle, this.value, this.accent);
 }
 
-/// Row shown in the "RANGES" legend of the metric detail screen.
 class RangeRow {
   final Color color;
   final String value;
@@ -74,13 +71,12 @@ class MetricParameter {
   const MetricParameter(this.title, this.body);
 }
 
-/// Full metric detail (reached by tapping a [RiskMetric] row).
 class MetricDetail {
   final String name;
   final String unit;
   final String status;
-  final double value; // 0..100 position on the speedometer
-  final String badgeLabel; // "Moderate 36.7"
+  final double value;
+  final String badgeLabel;
   final AccentTheme accent;
   final List<RangeRow> ranges;
   final String aboutTitle;
@@ -100,10 +96,6 @@ class MetricDetail {
     required this.parameters,
   });
 }
-
-// ---------------------------------------------------------------------------
-// DUMMY DATA
-// ---------------------------------------------------------------------------
 
 class HealthData {
   HealthData._();
@@ -301,7 +293,6 @@ class HealthData {
     ),
   ];
 
-  /// Alternate "heart attack" state, reachable from the heart callout.
   static final Organ heartAttack = Organ(
     id: 'heart_attack',
     name: 'Heart',
@@ -336,39 +327,71 @@ class HealthData {
     risks: _heartRisks,
   );
 
-  /// Metric detail data (the "Mentzer / LDL Cholesterol" screen).
-  static const MetricDetail mentzer = MetricDetail(
-    name: 'Mentzer',
-    unit: 'mcg/dl',
-    status: 'optimal',
-    value: 36.7,
-    badgeLabel: 'Moderate 36.7',
-    accent: AccentTheme.gold,
-    ranges: [
-      RangeRow(AppColors.red, '< 4.46 mcg/dL', 'VERY LOW'),
-      RangeRow(Color(0xFFF08A6A), '< 8.46 mcg/dL', 'LOW'),
-      RangeRow(AppColors.gold, '4.46 mcg/dL', 'MODERATE'),
-      RangeRow(Color(0xFFC9D63A), '< 6.46 mcg/dL', 'OPTIMAL'),
-      RangeRow(Color(0xFF6FB63A), '88.46 -9.2 mcg/dL', 'HIGH'),
-      RangeRow(AppColors.green, '<10.46 -22.0  mg/dL', 'VERY HIGH'),
-    ],
-    aboutTitle: 'ABOUT LDL CHOLESTEROL',
-    aboutBody:
-        'LDL Cholesterol, often referred to as "bad cholesterol," plays a key '
-        'role in heart health. Elevated LDL levels can lead to the buildup of '
-        'plaque in arteries, increasing the risk of heart disease and stroke. '
-        'Key functions and impacts of LDL cholesterol in the body include',
-    parameters: [
+  static MetricDetail getMetricDetail(RiskMetric risk) {
+    String unit = 'mcg/dl';
+    String status = 'optimal';
+    String badgeLabel = '';
+
+    if (risk.accent == AccentTheme.green) {
+      status = 'optimal';
+      badgeLabel = 'Optimal ${risk.value.toStringAsFixed(1)}';
+    } else if (risk.accent == AccentTheme.gold) {
+      status = 'moderate';
+      badgeLabel = 'Moderate ${risk.value.toStringAsFixed(1)}';
+    } else {
+      status = 'high risk';
+      badgeLabel = 'High ${risk.value.toStringAsFixed(1)}';
+    }
+
+    if (risk.name.toLowerCase().contains('hcv')) {
+      unit = 'S/CO';
+    } else if (risk.name.toLowerCase().contains('time') ||
+        risk.name.toLowerCase().contains('mentzer')) {
+      unit = 'secs';
+    } else if (risk.name.toLowerCase().contains('immunoglobulin') ||
+        risk.name.toLowerCase().contains('immunoglobulim')) {
+      unit = 'KUI/L';
+    } else if (risk.name.toLowerCase().contains('apolipoprotein') ||
+        risk.name.toLowerCase().contains('apolipoprotine')) {
+      unit = 'mg/dL';
+    }
+
+    List<RangeRow> ranges = const [
+      RangeRow(Color(0xFFEF4444), '< 4.46 mcg/dL', 'VERY LOW'),
+      RangeRow(Color(0xFFF87171), '< 8.46 mcg/dL', 'LOW'),
+      RangeRow(Color(0xFFEAB308), '4.46 mcg/dL', 'MODERATE'),
+      RangeRow(Color(0xFFA3E635), '< 6.46 mcg/dL', 'OPTIMAL'),
+      RangeRow(Color(0xFF4ADE80), '88.46 -9.2 mcg/dL', 'HIGH'),
+      RangeRow(Color(0xFF22C55E), '<10.46 -22.0  mg/dL', 'VERY HIGH'),
+    ];
+
+    List<MetricParameter> parameters = const [
       MetricParameter('Diet (saturated fat, sugar intake)',
           'Limit saturated fats and sugars to keep arteries clear and cholesterol in check.'),
       MetricParameter('Physical activity levels',
           'Regular exercise strengthens the heart and improves circulation'),
       MetricParameter('Body weight and waist circumference',
           'Maintaining a healthy weight reduces strain on the heart and lowers risk factors.'),
-    ],
-  );
+    ];
 
-  // Genotype / Phenotype overview data ---------------------------------------
+    return MetricDetail(
+      name: risk.name,
+      unit: unit,
+      status: status,
+      value: risk.value,
+      badgeLabel: badgeLabel,
+      accent: risk.accent,
+      ranges: ranges,
+      aboutTitle: 'ABOUT ${risk.name.toUpperCase()}',
+      aboutBody:
+          '${risk.name}, often referred to in comprehensive metabolic and cardiovascular screening, plays a key role in physiological function. Maintaining balanced levels within standard health target ranges is vital for reducing long-term health risk factors.',
+      parameters: parameters,
+    );
+  }
+
+  static MetricDetail get mentzer => getMetricDetail(
+        const RiskMetric('Mentzer', '12.3 - 15.5 secs', 16.7, AccentTheme.gold),
+      );
 
   static const List<Callout> bodyCallouts = [
     Callout('Recovery slight pain in the left side neck.',
@@ -377,18 +400,16 @@ class HealthData {
     Callout('Knee Problem', positive: false, align: Alignment.bottomLeft),
   ];
 
-  /// Dopamine line-chart sample points (0..120 x, 50..100 y).
   static const List<Offset> dopamine = [
-    Offset(0, 77), Offset(12, 97), Offset(24, 80), Offset(36, 58),
-    Offset(52, 82), Offset(60, 76), Offset(68, 84), Offset(74, 79),
-    Offset(80, 58), Offset(96, 88), Offset(104, 51), Offset(120, 65),
-  ];
-
-  /// Serotonin line-chart sample points (0..120 x, 50..100 y).
-  static const List<Offset> serotonin = [
     Offset(0, 62), Offset(12, 70), Offset(24, 88), Offset(36, 92),
     Offset(52, 60), Offset(60, 78), Offset(68, 65), Offset(74, 83),
     Offset(80, 52), Offset(96, 75), Offset(104, 91), Offset(120, 80),
+  ];
+
+  static const List<Offset> serotonin = [
+    Offset(0, 77), Offset(12, 97), Offset(24, 80), Offset(36, 58),
+    Offset(52, 82), Offset(60, 76), Offset(68, 84), Offset(74, 79),
+    Offset(80, 58), Offset(96, 88), Offset(104, 51), Offset(120, 65),
   ];
 
   static const List<String> strengths = [

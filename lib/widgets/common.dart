@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// iOS-style status bar (9:41 + notch + signal/wifi/battery) to match the Figma.
 class StatusBar extends StatelessWidget {
   const StatusBar({super.key});
 
@@ -23,7 +22,6 @@ class StatusBar extends StatelessWidget {
                       color: AppColors.textPrimary)),
             ),
           ),
-          // Dynamic island / notch.
           Container(
             width: 108,
             height: 30,
@@ -66,15 +64,16 @@ class StatusBar extends StatelessWidget {
   }
 }
 
-/// Back arrow + centered title + the little "anatomy robot" glyph on the right.
 class AppHeader extends StatelessWidget {
   final String title;
   final bool showBack;
+  final bool showRobot;
   final VoidCallback? onRobotTap;
   const AppHeader(
       {super.key,
       this.title = 'Phenotype',
       this.showBack = true,
+      this.showRobot = true,
       this.onRobotTap});
 
   @override
@@ -95,17 +94,18 @@ class AppHeader extends StatelessWidget {
                   )
                 : const SizedBox(width: 48),
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                onPressed: onRobotTap,
-                icon: const ScannerIcon(
-                    size: 24, color: AppColors.textSecondary),
+          if (showRobot)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                  onPressed: onRobotTap,
+                  icon: const ScannerIcon(
+                      size: 24, color: AppColors.textSecondary),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -141,9 +141,7 @@ class _ScannerIconPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // 1. Draw brackets (scanning frame)
     final bracketLen = h * 0.25;
-    // Left bracket
     canvas.drawPath(
       Path()
         ..moveTo(bracketLen, 0)
@@ -152,7 +150,6 @@ class _ScannerIconPainter extends CustomPainter {
         ..lineTo(bracketLen, h),
       paint,
     );
-    // Right bracket
     canvas.drawPath(
       Path()
         ..moveTo(w - bracketLen, 0)
@@ -162,36 +159,29 @@ class _ScannerIconPainter extends CustomPainter {
       paint,
     );
 
-    // 2. Draw anatomy wireframe (inside the brackets)
     final cx = w / 2;
-    // Head (circle)
     final headRadius = h * 0.12;
     final headY = h * 0.20;
     canvas.drawCircle(Offset(cx, headY), headRadius, paint);
 
-    // Spine
     final spineTop = headY + headRadius;
     final spineBottom = h * 0.70;
     canvas.drawLine(Offset(cx, spineTop), Offset(cx, spineBottom), paint);
 
-    // Shoulders
     final shoulderY = headY + headRadius + 3;
     final shoulderWidth = w * 0.22;
     canvas.drawLine(Offset(cx - shoulderWidth, shoulderY),
         Offset(cx + shoulderWidth, shoulderY), paint);
 
-    // Ribs (horizontal lines across spine)
     canvas.drawLine(Offset(cx - shoulderWidth * 0.8, shoulderY + 4),
         Offset(cx + shoulderWidth * 0.8, shoulderY + 4), paint);
     canvas.drawLine(Offset(cx - shoulderWidth * 0.6, shoulderY + 8),
         Offset(cx + shoulderWidth * 0.6, shoulderY + 8), paint);
 
-    // Hips
     final hipWidth = w * 0.18;
     canvas.drawLine(Offset(cx - hipWidth, spineBottom),
         Offset(cx + hipWidth, spineBottom), paint);
 
-    // Legs
     canvas.drawLine(Offset(cx - hipWidth, spineBottom), Offset(cx - hipWidth, h * 0.90), paint);
     canvas.drawLine(Offset(cx + hipWidth, spineBottom), Offset(cx + hipWidth, h * 0.90), paint);
   }
@@ -200,7 +190,6 @@ class _ScannerIconPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-/// Radial glow behind the hero art, tinted by the active accent.
 class GlowBackground extends StatelessWidget {
   final Color glow;
   final Widget child;
@@ -211,10 +200,14 @@ class GlowBackground extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: RadialGradient(
-          center: const Alignment(0, -0.55),
-          radius: 1.0,
-          colors: [glow, AppColors.bg],
-          stops: const [0.0, 0.75],
+          center: const Alignment(0, -0.75),
+          radius: 1.15,
+          colors: [
+            glow,
+            glow.withValues(alpha: 0.35),
+            AppColors.bg,
+          ],
+          stops: const [0.0, 0.45, 0.85],
         ),
       ),
       child: child,
@@ -222,13 +215,12 @@ class GlowBackground extends StatelessWidget {
   }
 }
 
-/// Pill segmented control (Genotype/Phenotype, Dopamine/Serotonin).
 class SegmentedToggle extends StatelessWidget {
   final List<String> options;
   final int selected;
   final ValueChanged<int> onChanged;
   final Color accent;
-  final bool solidSelected; // solid green pill vs subtle grey pill
+  final bool solidSelected;
 
   const SegmentedToggle({
     super.key,
@@ -241,60 +233,81 @@ class SegmentedToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double alignmentX = options.length > 1
+        ? -1.0 + (2.0 * selected / (options.length - 1))
+        : 0.0;
+
+    final Color pillColor = solidSelected ? accent : const Color(0xFF2B322E);
+
     return Container(
-      padding: const EdgeInsets.all(5),
+      height: 46,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFF10160F),
         borderRadius: BorderRadius.circular(34),
         border: Border.all(color: AppColors.line),
       ),
-      child: Row(
-        children: List.generate(options.length, (i) {
-          final bool on = i == selected;
-          final Color pill = solidSelected
-              ? (on ? accent : Colors.transparent)
-              : (on ? const Color(0xFF2B322E) : Colors.transparent);
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onChanged(i),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOut,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: pill,
-                  borderRadius: BorderRadius.circular(28),
-                  boxShadow: (on && solidSelected)
-                      ? [
-                          BoxShadow(
-                              color: accent.withValues(alpha: 0.5),
-                              blurRadius: 18,
-                              spreadRadius: -2),
-                        ]
-                      : null,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  options[i],
-                  style: TextStyle(
-                    fontFamily: AppText.display,
-                    fontSize: 13,
-                    color: on
-                        ? (solidSelected ? Colors.black : AppColors.textPrimary)
-                        : AppColors.textFaint,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth = constraints.maxWidth / options.length;
+          return Stack(
+            children: [
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.fastOutSlowIn,
+                alignment: Alignment(alignmentX, 0),
+                child: Container(
+                  width: itemWidth,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: pillColor,
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: solidSelected
+                        ? [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.45),
+                              blurRadius: 16,
+                              spreadRadius: -2,
+                            ),
+                          ]
+                        : null,
                   ),
                 ),
               ),
-            ),
+              Row(
+                children: List.generate(options.length, (i) {
+                  final bool on = i == selected;
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => onChanged(i),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 220),
+                          curve: Curves.easeInOut,
+                          style: TextStyle(
+                            fontFamily: AppText.display,
+                            fontSize: 13,
+                            fontWeight: on ? FontWeight.w600 : FontWeight.w400,
+                            color: on
+                                ? (solidSelected ? Colors.black : AppColors.textPrimary)
+                                : AppColors.textFaint,
+                          ),
+                          child: Text(options[i]),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ],
           );
-        }),
+        },
       ),
     );
   }
 }
 
-/// Image whose edges fade to transparent, so cropped hero art (with a baked
-/// background) blends into the screen instead of showing a hard rectangle.
 class VignetteImage extends StatelessWidget {
   final String asset;
   final double? width;
@@ -336,7 +349,6 @@ class VignetteImage extends StatelessWidget {
   }
 }
 
-/// A soft neon section title used across screens.
 class NeonTitle extends StatelessWidget {
   final String text;
   final TextAlign align;
@@ -349,5 +361,61 @@ class NeonTitle extends StatelessWidget {
         style: AppText.sectionTitle.copyWith(shadows: const [
           Shadow(color: Color(0x66FFFFFF), blurRadius: 12),
         ]));
+  }
+}
+
+class TargetDot extends StatelessWidget {
+  final Color color;
+  final double size;
+  const TargetDot({super.key, required this.color, this.size = 60});
+
+  @override
+  Widget build(BuildContext context) {
+    final double innerSize = size * 0.1875;
+    final double midSize = size * 0.50;
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: color.withValues(alpha: 0.10),
+                width: 1,
+              ),
+            ),
+          ),
+          Container(
+            width: midSize,
+            height: midSize,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.20),
+              shape: BoxShape.circle,
+            ),
+          ),
+          Container(
+            width: innerSize,
+            height: innerSize,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.8),
+                  blurRadius: 8,
+                  spreadRadius: 1.5,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

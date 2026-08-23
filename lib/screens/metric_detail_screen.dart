@@ -6,12 +6,16 @@ import '../widgets/common.dart';
 import '../widgets/speedometer_gauge.dart';
 
 class MetricDetailScreen extends StatelessWidget {
-  const MetricDetailScreen({super.key});
+  final MetricDetail? metric;
+  const MetricDetailScreen({super.key, this.metric});
 
   @override
   Widget build(BuildContext context) {
-    final m = HealthData.mentzer;
-    final accent = m.accent.color;
+    final m = metric ?? HealthData.mentzer;
+    final statusCapitalized = m.status.isNotEmpty
+        ? '${m.status[0].toUpperCase()}${m.status.substring(1)}'
+        : 'Moderate';
+
     return Scaffold(
       body: GlowBackground(
         glow: m.accent.glow,
@@ -19,91 +23,149 @@ class MetricDetailScreen extends StatelessWidget {
           child: ListView(
             padding: EdgeInsets.zero,
             children: [
-            AppHeader(title: m.name),
-            const SizedBox(height: 6),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text.rich(TextSpan(children: [
-                    TextSpan(
-                        text: m.value.toStringAsFixed(1),
-                        style: const TextStyle(
-                            fontFamily: AppText.display,
-                            fontSize: 26,
-                            color: AppColors.textPrimary)),
-                    TextSpan(
-                        text: '  ${m.unit}',
-                        style: const TextStyle(
-                            fontSize: 15, color: AppColors.textSecondary)),
-                  ])),
-                  const SizedBox(height: 4),
-                  Text(m.status, style: AppText.bodyFaint),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
-            Center(child: SpeedometerGauge(fraction: m.value / 100, width: 320)),
-            const SizedBox(height: 10),
-            Center(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: accent),
+              AppHeader(title: m.name, showRobot: false),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: m.value.toStringAsFixed(1),
+                            style: const TextStyle(
+                              fontFamily: AppText.display,
+                              fontSize: 32,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' ${m.unit}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      m.status,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF8A8D8B),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text.rich(TextSpan(children: [
-                  const TextSpan(
-                      text: 'Moderate ',
-                      style: TextStyle(color: AppColors.textPrimary, fontSize: 13)),
-                  TextSpan(
-                      text: m.value.toStringAsFixed(1),
-                      style: TextStyle(
-                          fontFamily: AppText.display,
-                          fontSize: 15,
-                          color: accent)),
-                ])),
               ),
-            ),
-            const SizedBox(height: 26),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Text('RANGES',
-                  style: AppText.sectionTitle.copyWith(fontSize: 20)),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: _RangesGrid(ranges: m.ranges),
-            ),
-            const SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Text(
+              const SizedBox(height: 12),
+              Center(child: SpeedometerGauge(fraction: (m.value / 100).clamp(0.0, 1.0), width: 310)),
+              const SizedBox(height: 14),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F0D0A),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: m.accent.color, width: 1.2),
+                  ),
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$statusCapitalized ',
+                          style: TextStyle(
+                            color: m.accent.color,
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(
+                          text: m.value.toStringAsFixed(1),
+                          style: TextStyle(
+                            fontFamily: AppText.display,
+                            fontSize: 15.5,
+                            fontWeight: FontWeight.bold,
+                            color: m.accent.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(
+                  'RANGES',
+                  style: const TextStyle(
+                    fontFamily: AppText.display,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: _RangesGrid(ranges: m.ranges),
+              ),
+              const SizedBox(height: 32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Text(
                   'Parameters that are generally impacted by LDL Cholesterol:',
-                  style: AppText.bodyFaint.copyWith(fontSize: 13)),
-            ),
-            const SizedBox(height: 12),
-            ...m.parameters.map((p) => _ParamAccordion(param: p, accent: accent)),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(m.aboutTitle,
-                      style: AppText.sectionTitle.copyWith(fontSize: 16)),
-                  const SizedBox(height: 10),
-                  Text(m.aboutBody, style: AppText.body),
-                ],
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF8A8D8B),
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 14),
+              ...m.parameters.map((p) => _ParamAccordion(param: p)),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 22),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      m.aboutTitle,
+                      style: const TextStyle(
+                        fontFamily: AppText.display,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      m.aboutBody,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF8A8D8B),
+                        height: 1.45,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -115,7 +177,6 @@ class _RangesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Column-major: left column = first half, right column = second half.
     final half = (ranges.length / 2).ceil();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,19 +186,21 @@ class _RangesGrid extends StatelessWidget {
             children: [
               for (int i = 0; i < half; i++)
                 Padding(
-                    padding: const EdgeInsets.only(bottom: 18),
-                    child: _cell(ranges[i])),
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _cell(ranges[i]),
+                ),
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             children: [
               for (int i = half; i < ranges.length; i++)
                 Padding(
-                    padding: const EdgeInsets.only(bottom: 18),
-                    child: _cell(ranges[i])),
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: _cell(ranges[i]),
+                ),
             ],
           ),
         ),
@@ -147,32 +210,46 @@ class _RangesGrid extends StatelessWidget {
 
   Widget _cell(RangeRow r) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 30,
-          height: 30,
+          width: 32,
+          height: 32,
           decoration: BoxDecoration(
             color: r.color,
-            borderRadius: BorderRadius.circular(7),
+            borderRadius: BorderRadius.circular(9),
             boxShadow: [
               BoxShadow(
-                  color: r.color.withValues(alpha: 0.6),
-                  blurRadius: 12,
-                  spreadRadius: -2),
+                color: r.color.withValues(alpha: 0.45),
+                blurRadius: 10,
+                spreadRadius: 0,
+              ),
             ],
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(r.value,
-                  style: const TextStyle(
-                      fontSize: 14.5, color: AppColors.textPrimary)),
+              Text(
+                r.value,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
               const SizedBox(height: 2),
-              Text(r.label, style: AppText.chipLabel),
+              Text(
+                r.label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF8A8D8B),
+                  letterSpacing: 0.3,
+                ),
+              ),
             ],
           ),
         ),
@@ -183,8 +260,7 @@ class _RangesGrid extends StatelessWidget {
 
 class _ParamAccordion extends StatefulWidget {
   final MetricParameter param;
-  final Color accent;
-  const _ParamAccordion({required this.param, required this.accent});
+  const _ParamAccordion({required this.param});
 
   @override
   State<_ParamAccordion> createState() => _ParamAccordionState();
@@ -197,53 +273,64 @@ class _ParamAccordionState extends State<_ParamAccordion> {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(22, 0, 22, 12),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C100E),
+        color: const Color(0xFF131614),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.line),
+        border: Border.all(color: const Color(0xFF1F2321)),
       ),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  color: widget.accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(11),
+                  color: const Color(0xFF211D12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.verified_outlined,
-                    color: widget.accent, size: 20),
+                child: const Icon(
+                  Icons.stars_rounded,
+                  color: Color(0xFFEAB308),
+                  size: 22,
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.param.title,
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary)),
-                    if (_open) ...[
-                      const SizedBox(height: 6),
-                      Text(widget.param.body, style: AppText.bodyFaint),
-                    ] else ...[
-                      const SizedBox(height: 4),
-                      Text(widget.param.body,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppText.bodyFaint),
-                    ],
+                    Text(
+                      widget.param.title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.param.body,
+                      maxLines: _open ? null : 2,
+                      overflow: _open ? TextOverflow.visible : TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Color(0xFF8A8D8B),
+                        height: 1.3,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () => setState(() => _open = !_open),
-                icon: Icon(_open ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                    color: AppColors.textSecondary),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => setState(() => _open = !_open),
+                child: Icon(
+                  _open ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                  color: const Color(0xFF8A8D8B),
+                  size: 26,
+                ),
               ),
             ],
           ),

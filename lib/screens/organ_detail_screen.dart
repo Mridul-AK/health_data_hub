@@ -19,8 +19,9 @@ class OrganDetailScreen extends StatelessWidget {
     showOrganMetrics(
       context,
       selectedId: organ.id,
-      onSelect: (o) => Navigator.of(context).pushReplacement(
+      onSelect: (o) => Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => OrganDetailScreen(organ: o)),
+        (route) => route.isFirst,
       ),
     );
   }
@@ -52,8 +53,10 @@ class OrganDetailScreen extends StatelessWidget {
             ),
             _OrganHero(organ: organ, onCalloutTap: () => _onCalloutTap(context)),
             const SizedBox(height: 8),
-            NeonTitle(organ.gaugeLabel),
-            const SizedBox(height: 18),
+            Transform.translate(
+                offset: const Offset(0, -30),
+                child: NeonTitle(organ.gaugeLabel)),
+            const SizedBox(height: 8),
             Center(
                 child: RadialGauge(
                     value: organ.score.toDouble(),
@@ -98,7 +101,9 @@ class OrganDetailScreen extends StatelessWidget {
                           metric: m,
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (_) => const MetricDetailScreen()),
+                                builder: (_) => MetricDetailScreen(
+                                      metric: HealthData.getMetricDetail(m),
+                                    )),
                           ),
                         ))
                     .toList(),
@@ -127,34 +132,53 @@ class _OrganHero extends StatelessWidget {
         children: [
           Positioned(
             bottom: 6,
-            child:
-            // SizedBox(
-            //   width: 340,
-            //   height: 140,
-            //   child: Stack(
-            //     alignment: Alignment.center,
-            //     children: [
-            //       Image.asset('assets/images/layer.png', width: 320, fit: BoxFit.contain),
-                  Image.asset('assets/images/stand.png', width: 340, fit: BoxFit.contain),
-            //     ],
-            //   ),
-            // ),
+            child: Image.asset('assets/images/stand.png', width: 340, fit: BoxFit.contain),
           ),
           Align(
             alignment: const Alignment(0, -0.42),
             child: Image.asset(organ.heroAsset, height: 230, fit: BoxFit.contain),
           ),
-          // Callouts
+          for (final c in organ.callouts) _dotPositioned(c),
           for (final c in organ.callouts) _positioned(c),
         ],
       ),
     );
   }
 
+  Widget _dotPositioned(Callout c) {
+    final Color color = c.positive ? AppColors.green : const Color(0xFFFF5252);
+    const double size = 48;
+    final double half = size / 2;
+
+    if (c.align == Alignment.topRight) {
+      return Positioned(
+        top: 80 - half,
+        right: 168 - half,
+        child: TargetDot(color: color, size: size),
+      );
+    } else if (c.align == Alignment.topLeft) {
+      return Positioned(
+        top: 90 - half,
+        left: 168 - half,
+        child: TargetDot(color: color, size: size),
+      );
+    } else if (c.align == Alignment.bottomLeft) {
+      return Positioned(
+        top: 245 - half,
+        left: 168 - half,
+        child: TargetDot(color: color, size: size),
+      );
+    } else {
+      return Positioned(
+        top: 175 - half,
+        left: 168 - half,
+        child: TargetDot(color: color, size: size),
+      );
+    }
+  }
+
   Widget _positioned(Callout c) {
-    final bubble = c.link
-        ? GestureDetector(onTap: onCalloutTap, child: CalloutBubble(c, maxWidth: 170))
-        : CalloutBubble(c, maxWidth: 150);
+    final bubble = CalloutBubble(c, maxWidth: 150);
     if (c.align == Alignment.topRight) {
       return Positioned(top: 40, right: 12, child: bubble);
     } else if (c.align == Alignment.topLeft) {

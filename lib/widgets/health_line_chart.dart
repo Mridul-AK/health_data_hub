@@ -2,9 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// Smooth gradient line chart for "Dopamine Levels During Physical Activity".
 class HealthLineChart extends StatefulWidget {
-  final List<Offset> points; // x:0..120  y:50..100
+  final List<Offset> points;
   const HealthLineChart({super.key, required this.points});
 
   @override
@@ -68,8 +67,6 @@ class _ChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final plot = Rect.fromLTRB(38, 8, size.width - 6, size.height - 24);
-
-    // Grid + Y labels (50..100).
     final gridPaint = Paint()
       ..color = AppColors.line.withValues(alpha: 0.8)
       ..strokeWidth = 1;
@@ -88,7 +85,6 @@ class _ChartPainter extends CustomPainter {
       )..layout();
       tp.paint(canvas, Offset(plot.left - tp.width - 6, yy - tp.height / 2));
     }
-    // X labels 0..120.
     for (int x = 0; x <= 120; x += 20) {
       final xx = plot.left + (x - minX) / (maxX - minX) * plot.width;
       final tp = TextPainter(
@@ -103,20 +99,13 @@ class _ChartPainter extends CustomPainter {
       tp.paint(canvas, Offset(xx - tp.width / 2, plot.bottom + 6));
     }
 
-    // Dotted reference line ~80.
     final refY = plot.bottom - (80 - minY) / (maxY - minY) * plot.height;
     _dashLine(canvas, Offset(plot.left, refY), Offset(plot.right, refY),
         Paint()..color = Colors.white54..strokeWidth = 1, 2, 4);
-
-    // Build smooth path (Catmull-Rom -> cubic).
     final mapped = pts.map((p) => _map(p, size, plot)).toList();
     final path = _smooth(mapped);
-
-    // Animated trim.
     final metric = path.computeMetrics().first;
     final drawn = metric.extractPath(0, metric.length * progress);
-
-    // Area fill.
     final fill = Path.from(drawn)
       ..lineTo(mapped.last.dx * progress + plot.left * (1 - progress),
           plot.bottom)
@@ -138,8 +127,6 @@ class _ChartPainter extends CustomPainter {
         ).createShader(plot),
     );
     canvas.restore();
-
-    // Gradient stroke (green -> gold -> red across x).
     canvas.drawPath(
       drawn,
       Paint()
@@ -155,7 +142,6 @@ class _ChartPainter extends CustomPainter {
         ]).createShader(plot),
     );
 
-    // Data-point dots (revealed with progress).
     for (int i = 0; i < mapped.length; i++) {
       if (i / (mapped.length - 1) > progress) break;
       canvas.drawCircle(mapped[i], 4, Paint()..color = AppColors.cyan);

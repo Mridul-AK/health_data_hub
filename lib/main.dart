@@ -34,7 +34,6 @@ class HealthDataHubApp extends StatelessWidget {
     );
   }
 
-  /// Dev helper: allows deep-linking to a screen via ?screen= for screenshots.
   Widget _initialScreen() {
     final s = Uri.base.queryParameters['screen'];
     switch (s) {

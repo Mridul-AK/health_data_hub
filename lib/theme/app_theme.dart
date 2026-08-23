@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// Central palette + text styles for the Health Data Hub.
-///
-/// The whole app is a dark, neon "medical HUD". Each organ / section carries an
-/// accent colour that tints its gauge, glow and cards.
 class AppColors {
   AppColors._();
 
   static const Color bg = Color(0xFF000000);
   static const Color bgElevated = Color(0xFF080B09);
   static const Color card = Color(0xFF080B09);
-
   static const Color textPrimary = Color(0xFFF3F6F4);
   static const Color textSecondary = Color(0xFF9BA6A1);
   static const Color textFaint = Color(0xFF5E6A65);
-
-  // Accents used across organ / status states.
   static const Color green = Color(0xFF37E36B);
   static const Color greenDim = Color(0xFF1B7A3C);
   static const Color red = Color(0xFFF2452F);
@@ -25,11 +18,9 @@ class AppColors {
   static const Color cyan = Color(0xFF3FD8E8);
   static const Color blue = Color(0xFF2E7BF6);
   static const Color amber = Color(0xFFF39B2B);
-
   static const Color line = Color(0xFF1C2723);
 }
 
-/// Named accent so screens can be driven from data.
 enum AccentTheme { green, red, gold, cyan }
 
 extension AccentColors on AccentTheme {
@@ -49,11 +40,11 @@ extension AccentColors on AccentTheme {
   Color get glow {
     switch (this) {
       case AccentTheme.green:
-        return const Color(0xFF0B2A15);
+        return const Color(0xFF0B331A);
       case AccentTheme.red:
-        return const Color(0xFF2A0B08);
+        return const Color(0xFF380E09);
       case AccentTheme.gold:
-        return const Color(0xFF2A2408);
+        return const Color(0xFF6E500E);
       case AccentTheme.cyan:
         return const Color(0xFF08262A);
     }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/health_data.dart';
+import '../screens/blood_metrics_screen.dart';
 import '../theme/app_theme.dart';
 
-/// Slide-in "Organ Metrics" accordion panel (right side overlay).
 Future<void> showOrganMetrics(
   BuildContext context, {
-  required String selectedId,
+  String? selectedId,
   required ValueChanged<Organ> onSelect,
 }) {
   return showGeneralDialog(
@@ -37,21 +37,22 @@ Future<void> showOrganMetrics(
 }
 
 class _OrganMetricsPanel extends StatefulWidget {
-  final String selectedId;
+  final String? selectedId;
   final ValueChanged<Organ> onSelect;
   const _OrganMetricsPanel(
-      {required this.selectedId, required this.onSelect});
+      {this.selectedId, required this.onSelect});
 
   @override
   State<_OrganMetricsPanel> createState() => _OrganMetricsPanelState();
 }
 
 class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
-  int _open = 0; // 0 organs, 1 blood, 2 hormone
+  int _open = 0;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final isBloodSelected = widget.selectedId == 'blood';
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -78,8 +79,42 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
               if (_open == 0)
                 ...HealthData.organs.map((o) => _organTile(o)),
               const SizedBox(height: 10),
-              _sectionHeader('Blood Metrics', 1, filled: true),
-              if (_open == 1) _placeholderList(),
+              _sectionHeader('Blood Metrics', 1, filled: true, onTitleTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const BloodMetricsScreen()),
+                  (route) => route.isFirst,
+                );
+              }),
+              if (_open == 1)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const BloodMetricsScreen()),
+                      (route) => route.isFirst,
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isBloodSelected ? const Color(0xFF1E2421) : const Color(0xFF1A2226),
+                      borderRadius: BorderRadius.circular(16),
+                      border: isBloodSelected
+                          ? Border.all(color: AppColors.cyan, width: 1.2)
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset('assets/images/red_blood_cell.png', width: 24, height: 24, fit: BoxFit.contain),
+                        const SizedBox(width: 10),
+                        const Text('Blood Health Overview',
+                            style: TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 10),
               _sectionHeader('Hormone', 2, filled: true),
               if (_open == 2) _placeholderList(),
@@ -91,10 +126,16 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
   }
 
   Widget _sectionHeader(String title, int index,
-      {bool chevron = false, bool filled = false}) {
+      {bool chevron = false, bool filled = false, VoidCallback? onTitleTap}) {
     final open = _open == index;
     return GestureDetector(
-      onTap: () => setState(() => _open = open ? -1 : index),
+      onTap: () {
+        if (onTitleTap != null) {
+          onTitleTap();
+        } else {
+          setState(() => _open = open ? -1 : index);
+        }
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 6),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
@@ -133,7 +174,9 @@ class _OrganMetricsPanelState extends State<_OrganMetricsPanel> {
   }
 
   Widget _organTile(Organ o) {
-    final selected = o.id == widget.selectedId;
+    final selected = widget.selectedId != null &&
+        widget.selectedId!.isNotEmpty &&
+        o.id == widget.selectedId;
     return GestureDetector(
       onTap: () => widget.onSelect(o),
       child: AnimatedContainer(

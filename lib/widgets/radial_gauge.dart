@@ -2,16 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// The circular "Heart Condition / Immune strength" gauge.
-///
-/// Built entirely with [CustomPainter]:
-///  * an outer tick ring (scale 0-100 with labels),
-///  * a dense segmented progress ring that fills to [value],
-///  * a needle, and a glowing centre readout.
-///
-/// The fill + needle animate from 0 to [value] when first shown.
 class RadialGauge extends StatefulWidget {
-  final double value; // 0..100
+  final double value;
   final Color accent;
   final double size;
 
@@ -105,7 +97,6 @@ class _RadialGaugePainter extends CustomPainter {
 
   _RadialGaugePainter({required this.value, required this.accent});
 
-  // Arc geometry (canvas angles, clockwise, 0 = east).
   static const double _start = 125 * math.pi / 180;
   static const double _sweep = 290 * math.pi / 180;
 
@@ -115,7 +106,6 @@ class _RadialGaugePainter extends CustomPainter {
     final r = size.width / 2;
     final frac = (value / 100).clamp(0.0, 1.0);
 
-    // --- Base dark disc + subtle radial shading.
     canvas.drawCircle(
       center,
       r,
@@ -125,7 +115,6 @@ class _RadialGaugePainter extends CustomPainter {
         ).createShader(Rect.fromCircle(center: center, radius: r)),
     );
 
-    // --- Outer scale tick ring.
     const int ticks = 44;
     final tickOuter = r * 0.98;
     final tickInner = r * 0.90;
@@ -146,10 +135,9 @@ class _RadialGaugePainter extends CustomPainter {
       );
     }
 
-    // --- Scale labels 0..80.
     const labels = ['0', '20', '40', '60', '80'];
     for (int i = 0; i < labels.length; i++) {
-      final t = i / (labels.length - 1); // 0, 0.25, 0.5, 0.75, 1.0
+      final t = i / (labels.length - 1);
       final a = _start + _sweep * t;
       final pos = center + Offset(math.cos(a), math.sin(a)) * (r * 0.72);
       final bool isMid = i == labels.length ~/ 2;
@@ -166,7 +154,6 @@ class _RadialGaugePainter extends CustomPainter {
       tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
     }
 
-    // --- Segmented progress ring (dense radial bars).
     const int segs = 60;
     final segOuter = r * 0.70;
     final segInner = r * 0.56;
@@ -190,7 +177,6 @@ class _RadialGaugePainter extends CustomPainter {
       );
     }
 
-    // --- Bright leading glow arc over the filled portion.
     final glowRect = Rect.fromCircle(center: center, radius: r * 0.63);
     canvas.drawArc(
       glowRect,
@@ -205,7 +191,6 @@ class _RadialGaugePainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
     );
 
-    // --- Inner dark hub.
     canvas.drawCircle(
         center,
         r * 0.5,
@@ -215,7 +200,6 @@ class _RadialGaugePainter extends CustomPainter {
             const Color(0xFF010402),
           ]).createShader(Rect.fromCircle(center: center, radius: r * 0.5)));
 
-    // --- Needle.
     final na = _start + _sweep * frac;
     final needleTip =
         center + Offset(math.cos(na), math.sin(na)) * (r * 0.5);
@@ -229,7 +213,6 @@ class _RadialGaugePainter extends CustomPainter {
     );
     canvas.drawCircle(center, 4.5, Paint()..color = Colors.white);
 
-    // --- Top triangle marker (at 0.5 of the scale).
     final ma = _start + _sweep * 0.5;
     final mp = center + Offset(math.cos(ma), math.sin(ma)) * (r * 0.80);
     final tri = Path()

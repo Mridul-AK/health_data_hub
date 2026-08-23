@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/health_data.dart';
 import '../theme/app_theme.dart';
 
-/// Rounded neon annotation attached to the organ / body art.
 class CalloutBubble extends StatelessWidget {
   final Callout callout;
   final double maxWidth;

@@ -12,14 +12,12 @@ import '../widgets/organ_metrics_panel.dart';
 import '../widgets/radial_gauge.dart';
 import 'organ_detail_screen.dart';
 
-/// Genotype / Phenotype "Health Conditions Overview" screen.
 class OverviewScreen extends StatelessWidget {
   const OverviewScreen({super.key});
 
   void _openPanel(BuildContext context) {
     showOrganMetrics(
       context,
-      selectedId: 'heart',
       onSelect: (o) => Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => OrganDetailScreen(organ: o)),
       ),
@@ -129,7 +127,6 @@ class _BodyHero extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // 3D Stand Platform Disc - positioned cleanly at bottom so it is 100% fully visible
           Positioned(
             top: 300,
             child: Image.asset(
@@ -139,7 +136,6 @@ class _BodyHero extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          // 3D Body Figure - positioned above the platform disc
           Positioned(
             top: 0,
             bottom: 60,
@@ -148,43 +144,44 @@ class _BodyHero extends StatelessWidget {
               fit: BoxFit.contain,
             ),
           ),
-          // Target Dot 1: Neck/Shoulder (Green)
           Positioned(
-            top: 85,
-            right: 178,
-            child: _targetDot(AppColors.green),
-          ),
-          // Target Dot 2: Lungs/Chest (Red)
-          Positioned(
-            top: 135,
-            left: 172,
-            child: _targetDot(AppColors.red),
-          ),
-          // Target Dot 3: Knee (Red)
-          Positioned(
-            top: 310,
-            left: 174,
-            child: _targetDot(AppColors.red),
-          ),
-          // Callout 1: Top Right (Neck / Shoulder pain)
-          Positioned(
-            top: 30,
-            right: 12,
-            child: GestureDetector(
-              onTap: onDetails,
-              child: CalloutBubble(HealthData.bodyCallouts[0], maxWidth: 170),
+            //top: 0,
+            bottom: 20,
+            child: Image.asset(
+              'assets/images/shadow.png',
+              width: 200,
+              height: 150,
+              fit: BoxFit.contain,
             ),
           ),
-          // Callout 2: Middle Left (Chronics Lungs Problem)
           Positioned(
-            top: 125,
+            top: 51,
+            right: 154,
+            child: _targetDot(AppColors.green),
+          ),
+          Positioned(
+            top: 76,
+            left: 148,
+            child: _targetDot(AppColors.red),
+          ),
+          Positioned(
+            top: 286,
+            left: 150,
+            child: _targetDot(AppColors.red),
+          ),
+          Positioned(
+            top: 10,
+            right: 12,
+            child: CalloutBubble(HealthData.bodyCallouts[0], maxWidth: 170),
+          ),
+          Positioned(
+            top: 80,
             left: 12,
             child: CalloutBubble(HealthData.bodyCallouts[1], maxWidth: 145),
           ),
-          // Callout 3: Lower Left (Knee Problem)
           Positioned(
             top: 295,
-            left: 20,
+            left: 60,
             child: CalloutBubble(HealthData.bodyCallouts[2], maxWidth: 140),
           ),
         ],
@@ -193,26 +190,7 @@ class _BodyHero extends StatelessWidget {
   }
 
   Widget _targetDot(Color color) {
-    return Container(
-      width: 12,
-      height: 12,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: 0.8),
-            blurRadius: 8,
-            spreadRadius: 2,
-          ),
-          BoxShadow(
-            color: color.withValues(alpha: 0.4),
-            blurRadius: 16,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-    );
+    return TargetDot(color: color, size: 60);
   }
 }
 
@@ -308,11 +286,11 @@ class _AboutDnaRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('ABOUT Hyperprolactinemia',
-                  style: AppText.sectionTitle.copyWith(fontSize: 16)),
+                  style: AppText.sectionTitle.copyWith(fontSize: 14)),
               const SizedBox(height: 10),
               Text(
                 'This condition is characterized by abnormally high levels of prolactin in the blood, which can result from various factors, including dopamine dysfunction, certain medications, or tumors of the pituitary gland (prolactinomas).',
-                style: AppText.body,
+                style: AppText.body.copyWith(fontSize: 12),
               ),
             ],
           ),
