@@ -374,7 +374,6 @@ class _ColoredHorizonArcPainter extends CustomPainter {
     path.moveTo(w * 0.08, h);
     path.quadraticBezierTo(w * 0.5, -h * 0.35, w * 0.92, h);
 
-    // Glow under horizon line
     canvas.drawPath(
       path,
       Paint()
@@ -384,7 +383,6 @@ class _ColoredHorizonArcPainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
 
-    // Sharp colored horizon line
     canvas.drawPath(
       path,
       Paint()

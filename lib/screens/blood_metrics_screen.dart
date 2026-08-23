@@ -8,7 +8,7 @@ import '../widgets/organ_metrics_panel.dart';
 import 'organ_detail_screen.dart';
 
 class BloodMetricsScreen extends StatefulWidget {
-  final int initialTab; // 0: Genotype, 1: Phenotype
+  final int initialTab;
   const BloodMetricsScreen({super.key, this.initialTab = 0});
 
   @override
@@ -479,7 +479,6 @@ class _HorizonArcPainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
 
-    // Sharp golden horizon line
     canvas.drawPath(
       path,
       Paint()
@@ -527,7 +526,6 @@ class _GreenHorizonArcPainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
     );
 
-    // Sharp green horizon line
     canvas.drawPath(
       path,
       Paint()
@@ -609,8 +607,6 @@ class _GenotypeDetailsSection extends StatelessWidget {
         ),
 
         const SizedBox(height: 32),
-
-        // 2. ABOUT SLC6A4 Section
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -1379,7 +1375,6 @@ class _BloodGaugePainter extends CustomPainter {
     final tipAngle = startAngle + progressSweep;
     final knobCenter = center + Offset(math.cos(tipAngle), math.sin(tipAngle)) * outerRadius;
 
-    // Knob drop shadow
     canvas.drawCircle(
       knobCenter,
       13,

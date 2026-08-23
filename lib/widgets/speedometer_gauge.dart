@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 
 class SpeedometerGauge extends StatefulWidget {
   final double fraction;
