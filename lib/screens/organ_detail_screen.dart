@@ -75,7 +75,11 @@ class OrganDetailScreen extends StatelessWidget {
               ),
             ),
             Transform.translate(
-              offset: const Offset(0, -30),
+              offset: const Offset(0, -95),
+              child: const _BottomGreenHorizonArc(),
+            ),
+            Transform.translate(
+              offset: const Offset(0, -75),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: RecommendationCard(
@@ -203,4 +207,53 @@ class _OrganHero extends StatelessWidget {
       return Positioned(top: 130, left: 8, child: bubble);
     }
   }
+}
+
+class _BottomGreenHorizonArc extends StatelessWidget {
+  const _BottomGreenHorizonArc();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 35,
+      width: double.infinity,
+      child: CustomPaint(
+        painter: _GreenHorizonArcPainter(),
+      ),
+    );
+  }
+}
+
+class _GreenHorizonArcPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final path = Path();
+
+    path.moveTo(w * 0.08, h);
+    path.quadraticBezierTo(w * 0.5, -h * 0.35, w * 0.92, h);
+
+    // Glow under horizon line
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6.0
+        ..color = const Color(0xFF22C55E).withValues(alpha: 0.65)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+    );
+
+    // Sharp green horizon line
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..color = const Color(0xFF22C55E),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
