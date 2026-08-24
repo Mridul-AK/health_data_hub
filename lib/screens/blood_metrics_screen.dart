@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import '../widgets/callout_bubble.dart';
 import '../widgets/common.dart';
 import '../widgets/organ_metrics_panel.dart';
 import 'organ_detail_screen.dart';

@@ -67,11 +67,7 @@ class MetricDetailScreen extends StatelessWidget {
               ),
               Center(child: SpeedometerGauge(fraction: (m.value / 100).clamp(0.0, 1.0), width: 310)),
               Transform.translate(
-                offset: const Offset(0, -35),
-                child: _BottomColoredHorizonArc(color: m.accent.color),
-              ),
-              Transform.translate(
-                offset: const Offset(0, -20),
+                offset: const Offset(0, -5),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 7),
@@ -345,54 +341,4 @@ class _ParamAccordionState extends State<_ParamAccordion> {
   }
 }
 
-class _BottomColoredHorizonArc extends StatelessWidget {
-  final Color color;
-  const _BottomColoredHorizonArc({required this.color});
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 35,
-      width: double.infinity,
-      child: CustomPaint(
-        painter: _ColoredHorizonArcPainter(color: color),
-      ),
-    );
-  }
-}
-
-class _ColoredHorizonArcPainter extends CustomPainter {
-  final Color color;
-  _ColoredHorizonArcPainter({required this.color});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final path = Path();
-
-    path.moveTo(w * 0.08, h);
-    path.quadraticBezierTo(w * 0.5, -h * 0.35, w * 0.92, h);
-
-    canvas.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6.0
-        ..color = color.withValues(alpha: 0.65)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
-    );
-
-    canvas.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.2
-        ..color = color,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _ColoredHorizonArcPainter oldDelegate) =>
-      oldDelegate.color != color;
-}
